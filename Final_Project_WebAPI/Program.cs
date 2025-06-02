@@ -5,30 +5,29 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.EntityFrameworkCore;
 using System.Text;
 using Microsoft.OpenApi.Models;
-using Microsoft.AspNetCore.HttpOverrides;
+using Final_Project_WebAPI;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-// Add CORS with Azure domain
+// Add CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp",
         builder => builder
             .WithOrigins(
                 "http://localhost:3000",
-                "https://localhost:3000",
-                "https://your-production-domain.com",
-                "https://yourapp.azurewebsites.net"
-            )
+                "https://localhost:3000"
+            ) // React's default port
             .AllowAnyMethod()
             .AllowAnyHeader()
             .AllowCredentials());
 });
 
 builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();// Add this near the top where other services are configured
 builder.Services.AddHealthChecks();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -37,6 +36,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo { Title = "Final Project API", Version = "v1" });
+
+    // Add JWT Authentication to Swagger
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -44,14 +45,18 @@ builder.Services.AddSwaggerGen(options =>
         Scheme = "bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "Enter your valid token"
+        Description = "Enter your valid token in the text input below.\r\n\r\nExample: \"Bearer eyJhbGciOi...\""
     });
     options.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
             new OpenApiSecurityScheme
             {
-                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
             },
             new string[] {}
         }
@@ -59,9 +64,13 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 var jwtSettings = builder.Configuration.GetSection("Jwt");
+
+// Ensure the "Key" value is not null or empty to avoid null reference issues
 var jwtKey = jwtSettings["Key"];
 if (string.IsNullOrEmpty(jwtKey))
-    throw new InvalidOperationException("JWT Key is not configured.");
+{
+    throw new InvalidOperationException("JWT Key is not configured in the application settings.");
+}
 
 builder.Services.AddAuthentication(options =>
 {
@@ -85,37 +94,41 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"));
+
     options.AddPolicy("RequireInstructorRole", policy => policy.RequireRole("Instructor"));
+
     options.AddPolicy("RequireStudentRole", policy => policy.RequireRole("Student"));
+
     options.AddPolicy("RequireAdminOrInstructorRole", policy => policy.RequireRole("Admin", "Instructor"));
+
     options.AddPolicy("RequireAdminOrInstructorOrStudentRole", policy => policy.RequireRole("Admin", "Instructor", "Student"));
 });
 
+//builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("Smtp"));
-builder.Services.AddTransient<IEmailService, EmailService>();
+
+// Register EmailService
+//builder.Services.AddTransient<IEmailService, EmailService>();
+builder.Services.AddTransient<Final_Project_WebAPI.Services.IEmailService,EmailService>();
 
 var app = builder.Build();
 
-// Handle proxy headers from Azure
-app.UseForwardedHeaders(new ForwardedHeadersOptions
-{
-    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-});
-
-app.UseHttpsRedirection();
-
-app.UseCors("AllowReactApp");
-
-app.UseHealthChecks("/api/health");
-
-app.UseAuthentication();
-app.UseAuthorization();
-
+// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseHttpsRedirection();
+
+// Use CORS before authentication
+app.UseCors("AllowReactApp");
+
+// Add this in the middleware section, before app.UseAuthorization()
+app.UseHealthChecks("/api/health");
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 
