@@ -114,7 +114,7 @@ builder.Services.AddTransient<Final_Project_WebAPI.Services.IEmailService,EmailS
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment() || app.Environment.IsStaging() || app.Environment.IsProduction())
+if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
