@@ -145,7 +145,7 @@ namespace Final_Project_WebAPI.Controllers
                 return Ok(new { message = "If the email exists, reset instructions have been sent." });
 
             var token = GeneratePasswordResetToken(user);
-            var resetLink = $"http://localhost:3000/reset-password?token={Uri.EscapeDataString(token)}";
+            var resetLink = $"https://thankful-forest-00f125b00.6.azurestaticapps.net/reset-password?token={Uri.EscapeDataString(token)}";
 
             await _emailService.SendEmailAsync(
                 user.Email,
