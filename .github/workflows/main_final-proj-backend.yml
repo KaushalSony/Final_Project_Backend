@@ -23,6 +23,13 @@ jobs:
         with:
           dotnet-version: '8.x'
 
+      - name: Restore NuGet packages (with retry)
+        run: |
+          for i in 1 2 3; do
+            echo "Attempt $i to restore..."
+            dotnet restore && break || sleep 10
+          done
+
       - name: Build with dotnet
         run: dotnet build --configuration Release
 
