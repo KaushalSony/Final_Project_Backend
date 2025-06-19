@@ -102,6 +102,7 @@ builder.Services.AddAuthorization(options =>
 
 //builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("Smtp"));
+builder.Services.AddScoped<BlobStorageService>();
 
 // Register EmailService
 //builder.Services.AddTransient<IEmailService, EmailService>();
