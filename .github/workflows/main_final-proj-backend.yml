@@ -24,11 +24,18 @@ jobs:
           dotnet-version: '8.x'
 
       - name: Restore NuGet packages (with retry)
+        shell: pwsh
         run: |
-          for i in 1 2 3; do
-            echo "Attempt $i to restore..."
-            dotnet restore && break || sleep 10
-          done
+          for ($i = 1; $i -le 3; $i++) {
+            Write-Host "Attempt $i to restore packages..."
+            try {
+              dotnet restore
+              if ($LASTEXITCODE -eq 0) { break }
+            } catch {
+              Write-Host "Restore failed, retrying..."
+              Start-Sleep -Seconds 10
+            }
+          }
 
       - name: Build with dotnet
         run: dotnet build --configuration Release
