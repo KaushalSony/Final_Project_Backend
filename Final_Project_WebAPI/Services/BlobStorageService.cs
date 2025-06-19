@@ -16,11 +16,11 @@ namespace Final_Project_WebAPI.Services
 
         public BlobStorageService(IConfiguration configuration)
         {
-            _containerName = configuration.GetSection("AzureBlobStorage:ContainerName").Value!;
-            _accountName = configuration.GetSection("AzureBlobStorage:AccountName").Value!;
-            _accountKey = configuration.GetSection("AzureBlobStorage:AccountKey").Value!;
+            _containerName = configuration.GetSection("BlobStorage:ContainerName").Value!;
+            _accountName = configuration.GetSection("BlobStorage:AccountName").Value!;
+            _accountKey = configuration.GetSection("BlobStorage:AccountKey").Value!;
 
-            var connectionString = configuration.GetSection("AzureBlobStorage:ConnectionString").Value;
+            var connectionString = configuration.GetSection("BlobStorage:ConnectionString").Value;
             _blobServiceClient = new BlobServiceClient(connectionString);
 
             CreateContainerIfNotExists();
