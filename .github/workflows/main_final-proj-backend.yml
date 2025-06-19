@@ -23,13 +23,14 @@ jobs:
         with:
           dotnet-version: '8.x'
 
+
       - name: Restore NuGet packages (with retry)
         shell: pwsh
         run: |
           for ($i = 1; $i -le 3; $i++) {
             Write-Host "Attempt $i to restore packages..."
             try {
-              dotnet restore
+              dotnet restore ./Final_Project_Backend/Final_Project_WebAPI/Final_Project_WebAPI.csproj
               if ($LASTEXITCODE -eq 0) { break }
             } catch {
               Write-Host "Restore failed, retrying..."
