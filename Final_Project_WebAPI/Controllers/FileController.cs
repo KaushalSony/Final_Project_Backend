@@ -20,8 +20,8 @@ namespace Final_Project_WebAPI.Controllers
         {
             _blobStorageService = blobStorageService;
             _logger = logger;
-            var connectionString = configuration.GetSection("AzureBlobStorage:ConnectionString").Value;
-            _containerName = configuration.GetSection("AzureBlobStorage:ContainerName").Value;
+            var connectionString = configuration.GetSection("BlobStorage:ConnectionString").Value;
+            _containerName = configuration.GetSection("BlobStorage:ContainerName").Value;
             _blobServiceClient = new BlobServiceClient(connectionString);
         }
 
