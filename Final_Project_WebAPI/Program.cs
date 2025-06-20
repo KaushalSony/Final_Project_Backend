@@ -104,6 +104,10 @@ builder.Services.AddAuthorization(options =>
 builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("Smtp"));
 builder.Services.AddScoped<BlobStorageService>();
 
+builder.Services.AddApplicationInsightsTelemetry(options =>
+{
+    options.ConnectionString = builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"];
+});
 // Register EmailService
 //builder.Services.AddTransient<IEmailService, EmailService>();
 builder.Services.AddTransient<Final_Project_WebAPI.Services.IEmailService,EmailService>();

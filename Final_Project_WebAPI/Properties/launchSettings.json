@@ -15,9 +15,7 @@
       "launchBrowser": true,
       "launchUrl": "swagger",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "SMTP__USERNAME": "edu.sync.ju@gmail.com",
-        "SMTP__PASSWORD": "tmhghkqdowiyptuq"
+        "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "dotnetRunMessages": true,
       "applicationUrl": "https://localhost:7176;http://localhost:5217"
