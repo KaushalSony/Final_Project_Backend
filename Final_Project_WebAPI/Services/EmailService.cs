@@ -7,18 +7,22 @@ using System.Net.Mail;
 public class EmailService : IEmailService
 {
     private readonly SmtpSettings _smtpSettings;
+    private readonly IConfiguration _configuration;
 
-    public EmailService(IOptions<SmtpSettings> smtpSettings)
+
+    public EmailService(IOptions<SmtpSettings> smtpSettings, IConfiguration configuration)
     {
         _smtpSettings = smtpSettings.Value;
+        _configuration = configuration;
     }
 
     public async Task SendEmailAsync(string to, string subject, string body)
     {
         // Read from environment variables (works with user-secrets in .NET)
-        var username = Environment.GetEnvironmentVariable("SMTP__USERNAME")
+
+        var username = _configuration["SMTP:USERNAME"]
             ?? throw new InvalidOperationException("SMTP__USERNAME is not set in environment variables or user-secrets.");
-        var password = Environment.GetEnvironmentVariable("SMTP__PASSWORD")
+        var password = _configuration["SMTP:PASSWORD"]
             ?? throw new InvalidOperationException("SMTP__PASSWORD is not set in environment variables or user-secrets.");
 
         try
