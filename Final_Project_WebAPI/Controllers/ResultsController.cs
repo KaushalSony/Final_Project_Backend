@@ -1,4 +1,5 @@
-﻿using Final_Project_WebAPI.Data;
+﻿using EduSyncAPI.Services;
+using Final_Project_WebAPI.Data;
 using Final_Project_WebAPI.DTO;
 using Final_Project_WebAPI.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -20,10 +21,12 @@ namespace Final_Project_WebAPI.Controllers
     public class ResultsController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly EventHubService _eventHubService; // Inject EventHubService
 
-        public ResultsController(AppDbContext context)
+        public ResultsController(AppDbContext context, EventHubService eventHubService)
         {
             _context = context;
+            _eventHubService = eventHubService;
         }
 
         // GET: api/Results
@@ -116,6 +119,17 @@ namespace Final_Project_WebAPI.Controllers
 
             _context.Results.Add(result);
             await _context.SaveChangesAsync();
+
+            // Send event to Event Hub (using anonymous object, no new model needed)
+            await _eventHubService.SendEventAsync(new
+            {
+                AssessmentId = assessmentId,
+                UserId = userIdClaim,
+                Score = resultdto.Score,
+                AttemptDate = resultdto.AttemptDate,
+                EventType = "QuizResultSubmitted",
+                Timestamp = DateTime.UtcNow
+            }, "QuizResultSubmitted");
 
             var dto = new ResultReadDTO
             {

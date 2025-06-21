@@ -1,11 +1,12 @@
+using EduSyncAPI.Services;
+using Final_Project_WebAPI;
 using Final_Project_WebAPI.Data;
 using Final_Project_WebAPI.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.EntityFrameworkCore;
-using System.Text;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Final_Project_WebAPI;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -102,7 +103,10 @@ builder.Services.AddAuthorization(options =>
 
 //builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("Smtp"));
+
 builder.Services.AddScoped<BlobStorageService>();
+
+builder.Services.AddSingleton<EventHubService>();
 
 builder.Services.AddApplicationInsightsTelemetry(options =>
 {
