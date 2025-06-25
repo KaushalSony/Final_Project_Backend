@@ -123,7 +123,7 @@ namespace Final_Project_WebAPI.Controllers
             // Send event to Event Hub (using anonymous object, no new model needed)
             await _eventHubService.SendEventAsync(new
             {
-                ResultId = ResultId,
+                ResultId = result.ResultId,
                 AssessmentId = assessmentId,
                 UserId = userIdClaim,
                 Score = resultdto.Score,
