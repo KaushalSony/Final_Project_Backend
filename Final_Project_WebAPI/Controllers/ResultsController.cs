@@ -128,10 +128,5 @@ namespace Final_Project_WebAPI.Controllers
 
             return NoContent();
         }
-
-        private bool ResultExists(Guid id)
-        {
-            return _context.Results.Any(e => e.ResultId == id);
-        }
     }
 }

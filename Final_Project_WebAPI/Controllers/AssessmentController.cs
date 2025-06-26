@@ -232,21 +232,5 @@ namespace Final_Project_WebAPI.Controllers
             error = null;
             return true;
         }
-
-        private bool ValidateAssessment(AssessmentCreateDTO dto, out string? error)
-        {
-            if (string.IsNullOrWhiteSpace(dto.Title))
-            {
-                error = "Title is required.";
-                return false;
-            }
-            if (dto.MaxScore <= 0)
-            {
-                error = "MaxScore must be greater than zero.";
-                return false;
-            }
-            // Optionally, check if CourseId exists in the database here
-            return ValidateQuestions(dto.Questions, out error);
-        }
     }
 }
