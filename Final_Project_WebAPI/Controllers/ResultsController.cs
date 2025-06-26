@@ -69,36 +69,6 @@ namespace Final_Project_WebAPI.Controllers
             return Ok(dto);
         }
 
-        // PUT: api/Results/5
-        [HttpPut("{id}")]
-        [Authorize(Policy = "RequireAdminOrInstructorRole")]
-        public async Task<IActionResult> PutResult(Guid id, ResultCreateDTO resultdto)
-        {
-            var result = await _context.Results.FindAsync(id);
-            if (result == null)
-                return NotFound();
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (userIdClaim == null)
-                return Unauthorized();
-
-            result.Score = resultdto.Score;
-            result.AttemptDate = resultdto.AttemptDate;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ResultExists(id))
-                    return NotFound();
-                else
-                    throw;
-            }
-
-            return NoContent();
-        }
-
         // POST: api/Results
         [HttpPost("assessment/{assessmentId}")]
         [Authorize(Policy = "RequireStudentRole")]
